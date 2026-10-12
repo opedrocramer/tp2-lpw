@@ -11,10 +11,23 @@
 
 <body>
     <div class="game-container">
-        <button class="menu-btn">
+        <button onclick="document.getElementById('janela').showModal()" class="menu-btn">
             <img src="images/icons/hamburger-menu-mobile-svgrepo-com.svg" alt="menu icon">
         </button>
-        <canvas class="game-canvas" width="352" height="198"></canvas>
+        
+    <dialog id="janela">
+        <form method="dialog">
+        <h1>Sobre os autores:</h1>
+        <p>
+                O jogo foi desenvolvido por Pedro Aguiar Cramer e Thauany
+            Victória Araújo Fonseca, alunos da turma de 2026 do curso
+            técnico em informática da UFCI-MG. 
+        </p>
+        <button class="fechar">X</button>
+        </form>
+    </dialog>
+
+    <canvas class="game-canvas" width="352" height="198"></canvas>
     </div>
 
     <script src="/socket.io/socket.io.js"></script>
