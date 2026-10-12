@@ -56,7 +56,7 @@ export default class Overworld {
             isPlayerControlled: isLocal,
             x: playerInfo.x,
             y: playerInfo.y,
-            src: isLocal ? 'images/characters/people/hero.png' : 'images/characters/people/npc1.png'
+            src: isLocal ? 'images/characters/bolinha_boazinha.png' : 'images/characters/bolinha_malvada.png'
         });
 
         this.map.gameObjects[playerInfo.id].mount(this.map);

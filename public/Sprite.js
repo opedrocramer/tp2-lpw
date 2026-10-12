@@ -22,9 +22,9 @@ export default class Sprite {
         // Configure animation & initial state
         this.animations = config.animations || {
             'idle-down': [0, 0],
-            'idle-right': [0, 1],
-            'idle-up': [0, 2],
-            'idle-left': [0, 3]
+            'idle-right': [2, 0],
+            'idle-up': [1, 0],
+            'idle-left': [3, 0]
         };
 
         this.currentAnimation = config.currentAnimation || 'idle-down';
