@@ -10,17 +10,26 @@ export default class GameObject {
             gameObject: this,
             src: config.src || 'images/characters/bolinha_boazinha.png'
         });
+        this.isItem = config.isItem || false;
     }
 
     mount(map) {
         this.isMounted = true;
-        map.addWall(this.x, this.y);
+        if (!this.isItem) {
+            map.addWall(this.x, this.y);
+        }
+        if (this.isItem) {
+            map.addItem(this.x, this.y);
+        }
     }
 
     unmount(map) {
         this.isMounted = false;
         map.removeWall(this.x, this.y);
+        if (this.isItem) {
+            map.removeItem(this.x, this.y);
+        }
     }
 
-    update() {}
+    update() { }
 }

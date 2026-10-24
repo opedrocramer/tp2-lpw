@@ -25,7 +25,8 @@ export default class Person extends GameObject {
             if (this.isPlayerControlled && state.arrow) {
                 this.startBehaviour(state, {
                     type: 'walk',
-                    direction: state.arrow
+                    direction: state.arrow,
+                    socket: state.socket
                 });
 
                 if (state.socket) {
@@ -37,7 +38,7 @@ export default class Person extends GameObject {
                 }
             }
         }
-        
+
         this.updateAnimation(state);
     }
 
@@ -48,6 +49,13 @@ export default class Person extends GameObject {
             if (!state.map.isSpaceTaken(this.x, this.y, this.direction)) {
                 state.map.moveWall(this.x, this.y, this.direction);
                 this.movingProgressRemaining = utils.withGrid(1);
+
+                if (state.map.hasItem(this.x, this.y, this.direction)) {
+                    const itemId = state.map.collectItem(this.x, this.y, this.direction);
+                    if (state.socket) {
+                        state.socket.emit('item-collected', itemId);
+                    }
+                }
             }
         }
     }

@@ -2,6 +2,7 @@ import utils from './utils.js';
 
 export default class OverworldMap {
     constructor(config) {
+        this.items = config.items || {};
         this.gameObjects = config.gameObjects;
 
         this.walls = config.walls || {};
@@ -60,6 +61,33 @@ export default class OverworldMap {
         const { x, y } = utils.nextPosition(wasX, wasY, direction);
         this.walls[`${ x },${ y }`] = true;
     }
+
+    addItem(id, x, y) {
+        this.items[`${ x },${ y }`] = {
+            id,
+            exists: true
+        };
+    }
+    removeItem(id) {
+        const item = Object.values(this.items).find(item => item.id === id);
+        const { x, y } = item;
+        delete this.items[`${ x },${ y }`];
+        delete this.gameObjects[this.items[`${ x },${ y }`].id];
+
+    }
+    collectItem(wasX, wasY, direction) {
+        const { x, y } = utils.nextPosition(wasX, wasY, direction);
+        const id = this.items[`${ x },${ y }`]?.id;
+        delete this.items[`${ x },${ y }`];
+        delete this.gameObjects[id];
+        
+        return id;
+    }
+    hasItem(currentX, currentY, direction) {
+        const { x, y } = utils.nextPosition(currentX, currentY, direction);
+
+        return this.items[`${ x },${ y }`]?.exists || false;
+    }
 }
 
 export const OverworldMaps = {
@@ -67,6 +95,7 @@ export const OverworldMaps = {
         lowerSrc: 'images/maps/cefetlandia.png',
         upperSrc: '',
         gameObjects: {},
+        items: {},
         walls: {
             [utils.asGridCoord(0, 3)]: true,
             [utils.asGridCoord(0, 4)]: true,

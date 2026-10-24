@@ -1,6 +1,7 @@
 import OverworldMap, { OverworldMaps } from './OverworldMap.js';
 import DirectionInput from './DirectionInput.js';
 import Person from './Person.js';
+import GameObject from './GameObject.js';
 
 export default class Overworld {
     constructor(config) {
@@ -73,6 +74,22 @@ export default class Overworld {
         }
     }
 
+    addItem(itemInfo) {
+        this.map.gameObjects[itemInfo.id] = new GameObject({
+            isItem: true,
+            x: itemInfo.x,
+            y: itemInfo.y,
+            src: 'images/estrela.png'
+        });
+        this.map.gameObjects[itemInfo.id].mount(this.map);
+
+        this.map.addItem(itemInfo.id, itemInfo.x, itemInfo.y);
+    }
+
+    removeItem(itemId) {
+        this.map.removeItem(itemId);
+    }
+
     init() {
         this.map = new OverworldMap(OverworldMaps.DemoRoom);
 
@@ -81,11 +98,17 @@ export default class Overworld {
 
         this.socket = io();
 
-        this.socket.on('setup', players => {
+        this.socket.on('setup', info => {
+            const { players, items } = info;
+
             Object.keys(players).forEach(id => {
                 this.addPlayer(players[id], id === this.socket.id);
             });
             this.map.mountObjects();
+
+            Object.keys(items).forEach(id => {
+                this.addItem(items[id]);
+            });
 
             this.startGameLoop();
         });
@@ -113,6 +136,10 @@ export default class Overworld {
 
         this.socket.on('player-disconnected', playerId => {
             this.removePlayer(playerId);
+        });
+
+        this.socket.on('item-added', itemInfo => {
+            this.addItem(itemInfo);
         });
     }
 }
