@@ -52,6 +52,15 @@ export default class Person extends GameObject {
 
                 if (state.map.hasItem(this.x, this.y, this.direction)) {
                     const itemId = state.map.collectItem(this.x, this.y, this.direction);
+                    
+                    if (this.isPlayerControlled) {
+                        if (window.gameScore !== undefined) {
+                            window.gameScore += 1;
+                        } else if (state.overworld) {
+                            state.overworld.score += 1;
+                        }
+                    }
+
                     if (state.socket) {
                         state.socket.emit('item-collected', itemId);
                     }

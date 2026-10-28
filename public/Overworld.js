@@ -11,6 +11,9 @@ export default class Overworld {
         this.map = null;
         this.socket = null;
         this.localPlayerId = null;
+        this.score = 0;
+        this.scorePanelImg = new Image();
+        this.scorePanelImg.src = 'images/score.png';
     }
 
     startGameLoop() {
@@ -31,7 +34,8 @@ export default class Overworld {
                 object.update({
                     socket: this.socket,
                     arrow: this.directionInput.direction,
-                    map: this.map
+                    map: this.map,
+                    overworld: this
                 });
             });
 
@@ -46,7 +50,30 @@ export default class Overworld {
             // Draw upper image
             this.map.drawUpperImage(this.ctx, cameraPerson);
 
-            requestAnimationFrame(stepFn);
+            this.ctx.save();
+            this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+            this.ctx.imageSmoothingEnabled = false;
+
+            const posX = 5;
+            const posY = 5;
+
+            const drawWidth = 64;
+            const drawHeight = 32;
+
+            if (this.scorePanelImg.complete && this.scorePanelImg.naturalWidth !== 0) {
+                this.ctx.drawImage(this.scorePanelImg, posX, posY, drawWidth, drawHeight);
+            }
+
+           
+            this.ctx.fillStyle = '#000000'; 
+            this.ctx.font = "Pixelify Sans"; 
+            
+            this.ctx.fillText(this.score, posX + 42, posY + 21); 
+
+            this.ctx.restore();
+
+            requestAnimationFrame(stepFn)
+
         }
 
         stepFn();
@@ -79,7 +106,7 @@ export default class Overworld {
             isItem: true,
             x: itemInfo.x,
             y: itemInfo.y,
-            src: 'images/estrela.png'
+            src: 'images/coracao.png'
         });
         this.map.gameObjects[itemInfo.id].mount(this.map);
 
