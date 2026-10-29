@@ -58,6 +58,13 @@ export default class Person extends GameObject {
                             window.gameScore += 1;
                         } else if (state.overworld) {
                             state.overworld.score += 1;
+                            document.getElementById('score-value').innerText = state.overworld.score;
+
+                            if (state.overworld.score >= 10) {
+                                setTimeout(() => {
+                                state.overworld.winner();
+                                }, 100);
+                            }
                         }
                     }
 

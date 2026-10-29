@@ -64,12 +64,6 @@ export default class Overworld {
                 this.ctx.drawImage(this.scorePanelImg, posX, posY, drawWidth, drawHeight);
             }
 
-           
-            this.ctx.fillStyle = '#000000'; 
-            this.ctx.font = "Pixelify Sans"; 
-            
-            this.ctx.fillText(this.score, posX + 42, posY + 21); 
-
             this.ctx.restore();
 
             requestAnimationFrame(stepFn)
@@ -115,6 +109,23 @@ export default class Overworld {
 
     removeItem(itemId) {
         this.map.removeItem(itemId);
+    }
+
+    winner() {
+    if (this.hasWon) return;
+    this.hasWon = true;
+
+    this.score = 0;
+
+    const scoreEl = document.getElementById('score-value');
+    if (scoreEl) {
+        scoreEl.innerText = "0";
+    }
+
+    alert("Você ganhou, vamos recomeçar do 0!");
+
+    window.location.reload();
+
     }
 
     init() {

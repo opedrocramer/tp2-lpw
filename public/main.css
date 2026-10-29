@@ -52,7 +52,7 @@ h1 {
   justify-self: center;
 }
 
-p {
+#janela p {
   background-color: #e8ed81;
   padding: 2px 6px;
 }
@@ -79,4 +79,34 @@ p {
   background: transparent;
   border: none;
   padding: 0;
+}
+
+.score-display {
+    position: absolute;
+  
+    top: 8.8%;   
+    left: 13%; 
+    
+    font-family: 'Pixelify Sans', sans-serif;
+    font-size: 1.4vw;
+    
+    font-weight: bold;
+    color: #292323;
+    image-rendering: pixelated;
+    pointer-events: none;
+}
+
+#copyrights {
+    position: absolute;
+  
+    top: 100%;   
+    left: 2%;
+    
+    font-family: 'Pixelify Sans', sans-serif;
+    font-size: 1.4vw;
+    
+    color: rgb(234, 164, 164);
+    text-shadow: 2px 2px 4px black;
+    image-rendering: pixelated;
+    pointer-events: none;
 }
