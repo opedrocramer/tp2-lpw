@@ -52,7 +52,7 @@ export default class Person extends GameObject {
 
                 if (state.map.hasItem(this.x, this.y, this.direction)) {
                     const itemId = state.map.collectItem(this.x, this.y, this.direction);
-                    
+
                     if (this.isPlayerControlled) {
                         if (window.gameScore !== undefined) {
                             window.gameScore += 1;
@@ -62,8 +62,11 @@ export default class Person extends GameObject {
 
                             if (state.overworld.score >= 10) {
                                 setTimeout(() => {
-                                state.overworld.winner();
-                                }, 100);
+                                    if (state.socket) {
+                                        state.socket.emit('game-won');
+                                    }
+                                    state.overworld.winner();
+                                }, 150);
                             }
                         }
                     }

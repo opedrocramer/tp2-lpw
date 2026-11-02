@@ -51,19 +51,25 @@ function chooseCell() {
 const players = {};
 const items = {};
 
-setInterval(() => {
-    const id = Math.floor(Math.random() * 10000000);
-    let { x, y } = chooseCell();
-    x = utils.withGrid(x);
-    y = utils.withGrid(y);
-    items[id] = {
-        id,
-        x,
-        y
-    };
+let itemsInterval = null;
 
-    io.emit('item-added', items[id]);
-}, 5000)
+const startItemsInterval = () => {
+    itemsInterval = setInterval(() => {
+        const id = Math.floor(Math.random() * 10000000);
+        let { x, y } = chooseCell();
+        x = utils.withGrid(x);
+        y = utils.withGrid(y);
+        items[id] = {
+            id,
+            x,
+            y
+        };
+
+        io.emit('item-added', items[id]);
+    }, 5000)
+};
+
+startItemsInterval();
 
 io.on('connection', (socket) => {
     console.log(`> New player connected with id ${socket.id}`);
@@ -105,6 +111,17 @@ io.on('connection', (socket) => {
     socket.on('item-collected', id => {
         delete items[id];
         socket.broadcast.emit('item-collected', id);
+    });
+
+    socket.on('game-won', () => {
+        clearInterval(itemsInterval);
+        setTimeout(() => {
+            startItemsInterval();
+        }, 10000)
+        for (const key in items) {
+            delete items[key];
+        }
+        socket.broadcast.emit('game-over');
     });
 });
 

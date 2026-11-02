@@ -112,19 +112,19 @@ export default class Overworld {
     }
 
     winner() {
-    if (this.hasWon) return;
-    this.hasWon = true;
+        if (this.hasWon) return;
+        this.hasWon = true;
 
-    this.score = 0;
+        this.score = 0;
 
-    const scoreEl = document.getElementById('score-value');
-    if (scoreEl) {
-        scoreEl.innerText = "0";
-    }
+        const scoreEl = document.getElementById('score-value');
+        if (scoreEl) {
+            scoreEl.innerText = "0";
+        }
 
-    alert("Você ganhou, vamos recomeçar do 0!");
+        alert("Você ganhou, vamos recomeçar do 0!");
 
-    window.location.reload();
+        window.location.reload();
 
     }
 
@@ -178,6 +178,19 @@ export default class Overworld {
 
         this.socket.on('item-added', itemInfo => {
             this.addItem(itemInfo);
+        });
+
+        this.socket.on('game-over', () => {
+            this.score = 0;
+
+            const scoreEl = document.getElementById('score-value');
+            if (scoreEl) {
+                scoreEl.innerText = "0";
+            }
+
+            alert("Você perdeu, vamos recomeçar do 0!");
+
+            window.location.reload();
         });
     }
 }
