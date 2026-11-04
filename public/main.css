@@ -30,15 +30,20 @@ body {
     position: absolute;
     top: 2rem;
     right: 2rem;
-    width: 4%;
-    aspect-ratio: 1 / 1;
+    width: auto; 
+    height: auto;
     border-radius: 0;
-    background-color: white;
-    border: 0.1rem solid #333;
+    background-color: #eae87e;
+    border: 0.2rem solid #999841;
+    image-rendering: pixelated;
+    padding: 0; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .game-container .menu-btn img {
-    width: 70%;
+    width: 100%;
 }
 
 .game-container canvas {
@@ -83,13 +88,10 @@ h1 {
 
 .score-display {
     position: absolute;
-  
     top: 8.8%;   
     left: 13%; 
-    
     font-family: 'Pixelify Sans', sans-serif;
     font-size: 1.4vw;
-    
     font-weight: bold;
     color: #292323;
     image-rendering: pixelated;
@@ -98,13 +100,10 @@ h1 {
 
 #copyrights {
     position: absolute;
-  
     top: 100%;   
     left: 2%;
-    
     font-family: 'Pixelify Sans', sans-serif;
     font-size: 1.4vw;
-    
     color: rgb(234, 164, 164);
     text-shadow: 2px 2px 4px black;
     image-rendering: pixelated;

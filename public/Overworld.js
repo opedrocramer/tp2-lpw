@@ -13,7 +13,7 @@ export default class Overworld {
         this.localPlayerId = null;
         this.score = 0;
         this.scorePanelImg = new Image();
-        this.scorePanelImg.src = 'images/score.png';
+        this.scorePanelImg.src = 'images/points/score.png';
     }
 
     startGameLoop() {
@@ -78,7 +78,7 @@ export default class Overworld {
             isPlayerControlled: isLocal,
             x: playerInfo.x,
             y: playerInfo.y,
-            src: isLocal ? 'images/characters/bolinha_boazinha.png' : 'images/characters/bolinha_malvada.png'
+            src: isLocal ? 'images/characters/good_ball.png' : 'images/characters/bad_ball.png'
         });
 
         this.map.gameObjects[playerInfo.id].mount(this.map);
@@ -100,7 +100,7 @@ export default class Overworld {
             isItem: true,
             x: itemInfo.x,
             y: itemInfo.y,
-            src: 'images/coracao.png'
+            src: 'images/hearts/pink_heart.png'
         });
         this.map.gameObjects[itemInfo.id].mount(this.map);
 

@@ -28,14 +28,14 @@ export default class OverworldMap {
             utils.withGrid(10.5) - cameraPerson.x,
             utils.withGrid(6) - cameraPerson.y
         );
-        // Object.keys(this.walls).forEach(key => {
-        //     const [x, y] = key.split(',').map(Number);
-        //     const offsetX = utils.withGrid(10.5) - cameraPerson.x;
-        //     const offsetY = utils.withGrid(6) - cameraPerson.y;
+        /* Object.keys(this.walls).forEach(key => {
+            const [x, y] = key.split(',').map(Number);
+            const offsetX = utils.withGrid(10.5) - cameraPerson.x;
+            const offsetY = utils.withGrid(6) - cameraPerson.y;
 
-        //     ctx.fillStyle = 'rgba(255, 0, 0, 0.5)';
-        //     ctx.fillRect(x + offsetX, y + offsetY, 16, 16);
-        // });
+            ctx.fillStyle = 'rgba(255, 0, 0, 0.5)';
+            ctx.fillRect(x + offsetX, y + offsetY, 16, 16);
+        }); */
     }
 
     mountObjects() {
