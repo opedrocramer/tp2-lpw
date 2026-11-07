@@ -14,6 +14,19 @@ export default class Overworld {
         this.score = 0;
         this.scorePanelImg = new Image();
         this.scorePanelImg.src = 'images/points/score.png';
+        this.gameOverState = null;
+        this.winImg = new Image();
+        this.winImg.src = 'images/endgame/ganhador.png';
+        this.loseImg = new Image();
+        this.loseImg.src = 'images/endgame/perdedor.png';
+        this.btnYesImg = new Image();
+        this.btnYesImg.src = 'images/buttons/yes.png';
+        this.btnNoImg = new Image();
+        this.btnNoImg.src = 'images/buttons/no.png';
+        this.gameOverTimer = null;
+        this.timeLeft = 10;
+        this.hasChoosen = false;
+        this.goodbyeMessage = false;
     }
 
     startGameLoop() {
@@ -66,9 +79,67 @@ export default class Overworld {
 
             this.ctx.restore();
 
-            requestAnimationFrame(stepFn)
+            if (this.gameOverState) {
+                this.ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-        }
+                const imgToDraw = this.gameOverState === 'won' ? this.winImg : this.loseImg;
+
+                if (imgToDraw.complete && imgToDraw.naturalWidth !== 0) {
+                    const imgWidth = 192;
+                    const imgHeight = 192;
+                    const x = (this.canvas.width - imgWidth) / 2;
+                    const y = (this.canvas.height - imgHeight) / 2;
+
+                    this.ctx.save();
+                    this.ctx.imageSmoothingEnabled = false;
+
+                    this.ctx.drawImage(imgToDraw, x, y, imgWidth, imgHeight);
+
+                    this.ctx.textAlign = 'center';
+
+                    if (this.goodbyeMessage) {
+                        this.ctx.fillStyle = '#FFFFFF';
+                        this.ctx.font = 'bold 10px sans-serif';
+                        this.ctx.fillText("Você será removido do jogo.", this.canvas.width / 2, y + 110);
+                    } else if (!this.hasChoosen) {
+                        this.ctx.fillStyle = '#FFFFFF';
+                        this.ctx.font = 'bold 10px sans-serif';
+                        this.ctx.fillText("Deseja jogar de novo?", this.canvas.width / 2, y + 90);
+
+                        const btnWidth = 36;
+                        const btnHeight = 36;
+                        const btnY = y + 93;
+
+                        const btnYesX = x + 50;
+                        const btnNoX = x + 106;
+
+                        if (this.btnYesImg.complete && this.btnYesImg.naturalWidth !== 0) {
+                            this.ctx.drawImage(this.btnYesImg, btnYesX, btnY, btnWidth, btnHeight);
+                        }
+                        if (this.btnNoImg.complete && this.btnNoImg.naturalWidth !== 0) {
+                            this.ctx.drawImage(this.btnNoImg, btnNoX, btnY, btnWidth, btnHeight);
+                        }
+
+                        this.ctx.fillStyle = '#FFFFFF';
+                        this.ctx.font = '9px sans-serif';
+                        this.ctx.fillText(`Começa em: ${this.timeLeft}s`, this.canvas.width / 2, y + 136);
+                    } else {
+                        this.ctx.fillStyle = '#FFFFFF';
+                        this.ctx.font = 'bold 11px sans-serif';
+                        let msgTempo = `Começando em ${this.timeLeft}s...`;
+                        this.ctx.fillText(msgTempo, this.canvas.width / 2, y + 110);
+                    }
+
+                    this.ctx.restore();
+                }
+                
+                requestAnimationFrame(stepFn);
+                return;
+            }
+
+            requestAnimationFrame(stepFn);
+        };
 
         stepFn();
     }
@@ -114,18 +185,35 @@ export default class Overworld {
     winner() {
         if (this.hasWon) return;
         this.hasWon = true;
-
         this.score = 0;
-
         const scoreEl = document.getElementById('score-value');
-        if (scoreEl) {
-            scoreEl.innerText = "0";
-        }
+        if (scoreEl) scoreEl.innerText = "0";
+        this.gameOverState = 'won';
+        
+        this.gameOverTimer = setInterval(() => {
+            this.timeLeft--;
+            if (this.timeLeft <= 0) {
+                clearInterval(this.gameOverTimer);
+                window.location.reload();
+            }
+        }, 1000);
+    }
 
-        alert("Você ganhou, vamos recomeçar do 0!");
-
-        window.location.reload();
-
+    loser() {
+        if (this.hasLost) return;
+        this.hasLost = true;
+        this.score = 0;
+        const scoreEl = document.getElementById('score-value');
+        if (scoreEl) scoreEl.innerText = "0";
+        this.gameOverState = 'lost';
+        
+        this.gameOverTimer = setInterval(() => {
+            this.timeLeft--;
+            if (this.timeLeft <= 0) {
+                clearInterval(this.gameOverTimer);
+                window.location.reload();
+            }
+        }, 1000);
     }
 
     init() {
@@ -181,16 +269,83 @@ export default class Overworld {
         });
 
         this.socket.on('game-over', () => {
-            this.score = 0;
+            this.loser();
+        });
 
-            const scoreEl = document.getElementById('score-value');
-            if (scoreEl) {
-                scoreEl.innerText = "0";
+        const getButtonBounds = () => {
+            const imgWidth = 192;
+            const imgHeight = 192;
+            const startX = (this.canvas.width - imgWidth) / 2;
+            const startY = (this.canvas.height - imgHeight) / 2;
+            
+            const btnWidth = 36;
+            const btnHeight = 36;
+            const btnY = startY + 84;
+
+            return {
+                yes: { x: startX + 50, y: btnY, w: btnWidth, h: btnHeight },
+                no: { x: startX + 106, y: btnY, w: btnWidth, h: btnHeight }
+            };
+        };
+
+        this.canvas.addEventListener('mousemove', (event) => {
+            if (!this.gameOverState || this.hasChoosen) {
+                this.canvas.style.cursor = 'default';
+                return;
             }
 
-            alert("Você perdeu, vamos recomeçar do 0!");
+            const rect = this.canvas.getBoundingClientRect();
+            const scaleX = this.canvas.width / rect.width;
+            const scaleY = this.canvas.height / rect.height;
+            const mouseX = (event.clientX - rect.left) * scaleX;
+            const mouseY = (event.clientY - rect.top) * scaleY;
 
-            window.location.reload();
+            const bounds = getButtonBounds();
+            const overYes = mouseX >= bounds.yes.x && mouseX <= bounds.yes.x + bounds.yes.w &&
+                            mouseY >= bounds.yes.y && mouseY <= bounds.yes.y + bounds.yes.h;
+            const overNo = mouseX >= bounds.no.x && mouseX <= bounds.no.x + bounds.no.w &&
+                           mouseY >= bounds.no.y && mouseY <= bounds.no.y + bounds.no.h;
+
+            if (overYes || overNo) {
+                this.canvas.style.cursor = 'pointer';
+            } else {
+                this.canvas.style.cursor = 'default';
+            }
+        });
+
+        this.canvas.addEventListener('click', (event) => {
+            if (!this.gameOverState || this.hasChoosen) return;
+
+            const rect = this.canvas.getBoundingClientRect();
+            const scaleX = this.canvas.width / rect.width;
+            const scaleY = this.canvas.height / rect.height;
+            const clickX = (event.clientX - rect.left) * scaleX;
+            const clickY = (event.clientY - rect.top) * scaleY;
+
+            const bounds = getButtonBounds();
+
+            if (clickX >= bounds.yes.x && clickX <= bounds.yes.x + bounds.yes.w && 
+                clickY >= bounds.yes.y && clickY <= bounds.yes.y + bounds.yes.h) {
+                this.hasChoosen = true;
+                this.canvas.style.cursor = 'default';
+            }
+
+            if (clickX >= bounds.no.x && clickX <= bounds.no.x + bounds.no.w && 
+                clickY >= bounds.no.y && clickY <= bounds.no.y + bounds.no.h) {
+                this.hasChoosen = true;
+                this.canvas.style.cursor = 'default';
+                clearInterval(this.gameOverTimer);
+                
+                if (this.socket) {
+                    this.socket.disconnect();
+                }
+
+                window.close();
+                this.goodbyeMessage = true; 
+                setTimeout(() => {
+                    window.location.href = "about:blank";
+                }, 1500);
+            }
         });
     }
 }
