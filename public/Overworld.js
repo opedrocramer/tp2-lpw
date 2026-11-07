@@ -171,11 +171,11 @@ export default class Overworld {
             isItem: true,
             x: itemInfo.x,
             y: itemInfo.y,
-            src: 'images/hearts/pink_heart.png'
+            src: itemInfo.isRare ? 'images/hearts/yellow_heart.png' : 'images/hearts/pink_heart.png'
         });
         this.map.gameObjects[itemInfo.id].mount(this.map);
 
-        this.map.addItem(itemInfo.id, itemInfo.x, itemInfo.y);
+        this.map.addItem(itemInfo.id, itemInfo.isRare, itemInfo.x, itemInfo.y);
     }
 
     removeItem(itemId) {

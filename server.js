@@ -9,32 +9,33 @@ const io = new Server(httpServer);
 
 app.use(express.static('public'));
 
-const colunas = 13;
-const linhas = 14;
+const columns = 13;
+const lines = 14;
+
+const blockedCells = new Set([
+    "2,6",
+    "2,7",
+    "3,6",
+    "3,7",
+    "7,8",
+    "7,9",
+    "7,10",
+    "8,8",
+    "8,9",
+    "8,10",
+    "11,6",
+    "12,6",
+    "13,6",
+]);
 
 function chooseCell() {
-    const blockedCells = new Set([
-        "2,6",
-        "2,7",
-        "3,6",
-        "3,7",
-        "7,8",
-        "7,9",
-        "7,10",
-        "8,8",
-        "8,9",
-        "8,10",
-        "11,6",
-        "12,6",
-        "13,6",
-    ]);
     const freeCells = [];
 
-    for (let y = 6; y <= linhas; y++) {
-        for (let x = 2; x <= colunas; x++) {
-            const chave = `${x},${y}`;
+    for (let y = 6; y <= lines; y++) {
+        for (let x = 2; x <= columns; x++) {
+            const key = `${x},${y}`;
 
-            if (!blockedCells.has(chave)) {
+            if (!blockedCells.has(key)) {
                 freeCells.push({ x, y });
             }
         }
@@ -56,17 +57,21 @@ let itemsInterval = null;
 const startItemsInterval = () => {
     itemsInterval = setInterval(() => {
         const id = Math.floor(Math.random() * 10000000);
-        let { x, y } = chooseCell();
-        x = utils.withGrid(x);
-        y = utils.withGrid(y);
-        items[id] = {
-            id,
-            x,
-            y
-        };
+        let { x, y } = chooseCell() || {x: null, y: null};
+        if (x && y) {
+            blockedCells.add(`${x},${y}`);
+            x = utils.withGrid(x);
+            y = utils.withGrid(y);
+            items[id] = {
+                id,
+                isRare: Math.random() < 1/5,
+                x,
+                y
+            };
 
-        io.emit('item-added', items[id]);
-    }, 5000)
+            io.emit('item-added', items[id]);
+        }
+    }, 1500)
 };
 
 startItemsInterval();
@@ -109,6 +114,8 @@ io.on('connection', (socket) => {
     });
 
     socket.on('item-collected', id => {
+        const { x, y } = items[id];
+        blockedCells.delete(`${x / 16},${y / 16}`);
         delete items[id];
         socket.broadcast.emit('item-collected', id);
     });

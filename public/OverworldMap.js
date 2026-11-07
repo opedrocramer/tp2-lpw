@@ -28,14 +28,14 @@ export default class OverworldMap {
             utils.withGrid(10.5) - cameraPerson.x,
             utils.withGrid(6) - cameraPerson.y
         );
-        /* Object.keys(this.walls).forEach(key => {
-            const [x, y] = key.split(',').map(Number);
-            const offsetX = utils.withGrid(10.5) - cameraPerson.x;
-            const offsetY = utils.withGrid(6) - cameraPerson.y;
+        // Object.keys(this.walls).forEach(key => {
+        //     const [x, y] = key.split(',').map(Number);
+        //     const offsetX = utils.withGrid(10.5) - cameraPerson.x;
+        //     const offsetY = utils.withGrid(6) - cameraPerson.y;
 
-            ctx.fillStyle = 'rgba(255, 0, 0, 0.5)';
-            ctx.fillRect(x + offsetX, y + offsetY, 16, 16);
-        }); */
+        //     ctx.fillStyle = 'rgba(255, 0, 0, 0.5)';
+        //     ctx.fillRect(x + offsetX, y + offsetY, 16, 16);
+        // });
     }
 
     mountObjects() {
@@ -62,9 +62,10 @@ export default class OverworldMap {
         this.walls[`${ x },${ y }`] = true;
     }
 
-    addItem(id, x, y) {
+    addItem(id, isRare, x, y) {
         this.items[`${ x },${ y }`] = {
             id,
+            isRare,
             exists: true
         };
     }
@@ -78,10 +79,11 @@ export default class OverworldMap {
     collectItem(wasX, wasY, direction) {
         const { x, y } = utils.nextPosition(wasX, wasY, direction);
         const id = this.items[`${ x },${ y }`]?.id;
+        const isRare = this.items[`${ x },${ y }`]?.isRare;
         delete this.items[`${ x },${ y }`];
         delete this.gameObjects[id];
         
-        return id;
+        return {id, isRare};
     }
     hasItem(currentX, currentY, direction) {
         const { x, y } = utils.nextPosition(currentX, currentY, direction);

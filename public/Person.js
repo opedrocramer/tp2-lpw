@@ -51,16 +51,16 @@ export default class Person extends GameObject {
                 this.movingProgressRemaining = utils.withGrid(1);
 
                 if (state.map.hasItem(this.x, this.y, this.direction)) {
-                    const itemId = state.map.collectItem(this.x, this.y, this.direction);
+                    const {id: itemId, isRare: isItemRare} = state.map.collectItem(this.x, this.y, this.direction);
 
                     if (this.isPlayerControlled) {
                         if (window.gameScore !== undefined) {
-                            window.gameScore += 1;
+                            window.gameScore += isItemRare ? 3 : 1;
                         } else if (state.overworld) {
-                            state.overworld.score += 1;
+                            state.overworld.score += isItemRare ? 3 : 1;
                             document.getElementById('score-value').innerText = state.overworld.score;
 
-                            if (state.overworld.score >= 10) {
+                            if (state.overworld.score >= 25) {
                                 setTimeout(() => {
                                     if (state.socket) {
                                         state.socket.emit('game-won');
